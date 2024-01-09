@@ -73,7 +73,7 @@ export default function Home() {
               console.log('handle submit form here')
               handleSubmit(onSubmit)()
             }}
-            onError={() => setReCaptchaLoading(false)}
+            onErrored={() => setReCaptchaLoading(false)}
             asyncScriptOnLoad={() => {
               // disable submit until asyncScript finish loading
               setReCaptchaLoading(false)
