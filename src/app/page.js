@@ -11,7 +11,7 @@ export default function Home() {
   const captRef = useRef(null)
   const [reCaptchaLoading, setReCaptchaLoading] = useState(true)
   const [prevVisibleChallengesCount, setPrevVisibleChallengesCount] = useState(0)
-  const [divColor, setDivColor] = useState('red')
+  // const [divColor, setDivColor] = useState('red')
 
   const callVerifyRecaptcha = () => {
     setReCaptchaLoading(true)
