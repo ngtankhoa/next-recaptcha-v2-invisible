@@ -1,14 +1,75 @@
+'use client'
+
 import Image from 'next/image'
+import { useForm } from 'react-hook-form'
+import ReCAPTCHA from 'react-google-recaptcha'
+import { useRef, useState, useEffect } from 'react'
+import cn from 'classnames'
 
 export default function Home() {
+  const { handleSubmit, register } = useForm()
+  const captRef = useRef(null)
+  const [reCaptchaLoading, setReCaptchaLoading] = useState(false)
+  const [prevVisibleChallengesCount, setPrevVisibleChallengesCount] = useState(0)
+  const [divColor, setDivColor] = useState('red')
+
+  const callVerifyRecaptcha = () => {
+    setReCaptchaLoading(true)
+    captRef.current.execute()
+  }
+
+  const onSubmit = (data) => {
+    console.log('form data: ', data)
+    console.log('handle call submit api')
+  }
+
+  useEffect(() => {
+    const handleDomChange = () => {
+      console.log('dom change')
+      const iframes = document.querySelectorAll('iframe[src*="recaptcha/api2/bframe"]')
+      const containers = [...iframes].map((iframe) => iframe.parentNode.parentNode)
+      console.log({ containers })
+      const visibleContainersCount = containers.filter((el) => el.style.visibility === 'visible').length
+
+      if (visibleContainersCount < prevVisibleChallengesCount) {
+        setReCaptchaLoading(false)
+      }
+
+      setPrevVisibleChallengesCount(visibleContainersCount)
+    }
+
+    const domObserver = new MutationObserver(handleDomChange)
+    domObserver.observe(document.body, { subtree: true, attributes: true })
+
+    return () => {
+      domObserver.disconnect()
+    }
+  }, [prevVisibleChallengesCount])
+
   return (
-    <main className='flex min-h-screen flex-col items-center justify-between p-24'>
-      <div className='z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex'>
-        <form id='demo-form' action='?' method='POST'>
-          <button class='g-recaptcha' data-sitekey='6LfDT0UpAAAAAFX3C-7xAiaeg30GYKSMLUfXmyI5' data-callback='onSubmit'>
-            Submit
+    <main className='min-h-screen p-6'>
+      {/* <div>
+        <button onClick={() => setDivColor((cur) => (cur === 'blue' ? 'red' : 'blue'))}>change div style</button>
+        <div id='example-div-id' style={{ background: divColor }}>
+          example div
+        </div>
+      </div> */}
+      <div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input {...register('input')} />
+          <button type='button' onClick={callVerifyRecaptcha} disabled={reCaptchaLoading}>
+            {reCaptchaLoading ? 'Submit disabled' : 'Submit'}
           </button>
-          <br />
+          <ReCAPTCHA
+            size='invisible'
+            ref={captRef}
+            sitekey='6LdoikUpAAAAAHJim55nIAIHWaDhGJNVlDjX-zLd'
+            onChange={() => {
+              console.log('handle submit form here')
+              handleSubmit(onSubmit)()
+            }}
+            onError={() => setReCaptchaLoading(false)}
+          />
         </form>
       </div>
     </main>

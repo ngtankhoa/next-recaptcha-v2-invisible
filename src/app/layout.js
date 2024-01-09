@@ -11,7 +11,6 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
-      <script src='https://www.google.com/recaptcha/api.js' async defer></script>
       <body className={inter.className}>{children}</body>
     </html>
   )
