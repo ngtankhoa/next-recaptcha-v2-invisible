@@ -9,7 +9,7 @@ import cn from 'classnames'
 export default function Home() {
   const { handleSubmit, register } = useForm()
   const captRef = useRef(null)
-  const [reCaptchaLoading, setReCaptchaLoading] = useState(false)
+  const [reCaptchaLoading, setReCaptchaLoading] = useState(true)
   const [prevVisibleChallengesCount, setPrevVisibleChallengesCount] = useState(0)
   const [divColor, setDivColor] = useState('red')
 
@@ -57,8 +57,13 @@ export default function Home() {
       <div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <input {...register('input')} />
-          <button type='button' onClick={callVerifyRecaptcha} disabled={reCaptchaLoading}>
-            {reCaptchaLoading ? 'Submit disabled' : 'Submit'}
+          <button
+            type='button'
+            onClick={callVerifyRecaptcha}
+            disabled={reCaptchaLoading}
+            className={cn('border border-black p-2', reCaptchaLoading && 'opacity-20')}
+          >
+            Submit button
           </button>
           <ReCAPTCHA
             size='invisible'
@@ -69,11 +74,13 @@ export default function Home() {
               handleSubmit(onSubmit)()
             }}
             onError={() => setReCaptchaLoading(false)}
+            asyncScriptOnLoad={() => {
+              // disable submit until asyncScript finish loading
+              setReCaptchaLoading(false)
+            }}
           />
         </form>
       </div>
     </main>
   )
 }
-
-// 6LfDT0UpAAAAAFX3C-7xAiaeg30GYKSMLUfXmyI5
